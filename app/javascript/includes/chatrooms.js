@@ -73,7 +73,30 @@ const chatroomUpdate = (() => {
     };
   })(this));
 
+  const pusherUpdate = (() => {
+    var channel, pusher;
+
+    pusher = new Pusher('<%= ENV["PUSHER_KEY"] %>', {
+      cluster: '<%= ENV["PUSHER_CLUSTER"] %>',
+      encrypted: true
+    });
+
+    channel = pusher.subscribe('chat');
+
+    channel.bind('new-chat', function(data) {
+      updateChat(data);
+      return updateAdminChat(data);
+    });
+
+    channel.bind('new-chatroom', function(data) {
+      updateAdminChatrooms(data);
+    });
+
+  });
+
+  pusherUpdate();
 });
+
 
 
 export { chatroomUpdate };
